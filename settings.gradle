@@ -1,0 +1,3 @@
+include ':recycler_binding'
+include ':app'
+rootProject.name = "MonoBankCurrency"
