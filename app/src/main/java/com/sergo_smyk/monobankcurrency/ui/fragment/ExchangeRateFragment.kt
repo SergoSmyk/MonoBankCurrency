@@ -14,7 +14,6 @@ import com.sergo_smyk.monobankcurrency.intent.ExchangeRateIntent
 import com.sergo_smyk.monobankcurrency.ui.binder.RatesListBinder
 import com.sergo_smyk.monobankcurrency.ui.diffcallback.RatesDiffCallback
 import com.sergo_smyk.recycler_binding.recycler_adapters.BindAdapter
-import com.sergo_smyk.recycler_binding.recycler_adapters.LiteBindAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -55,7 +54,7 @@ class ExchangeRateFragment : Fragment(R.layout.fragment_exchange_rate),
     override fun viewEvents(): Flow<ExchangeRateViewEvent> {
         val favoriteClicksFlow = ratesListBinder.favoriteClicksFlows
         val flows = listOf(
-            favoriteClicksFlow.receiveAsFlow().map {
+            favoriteClicksFlow.map {
                 ExchangeRateViewEvent.ChangeFavoriteStatus(it)
             },
             binding.swipeRefreshLayout.swipesForRefresh().map {

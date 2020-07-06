@@ -5,9 +5,7 @@ import com.sergo_smyk.monobankcurrency.data.api.Response
 import com.sergo_smyk.monobankcurrency.data.model.Rate
 import com.sergo_smyk.monobankcurrency.data.repository.RatesRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -20,7 +18,7 @@ class ExchangeRateIntent @Inject constructor(
     private val repository: RatesRepository
 ) : IntentFactory<ERViewEvent, ERState> {
 
-    private val modelChannel = ConflatedBroadcastChannel<ERState>()
+    private val modelChannel = MutableStateFlow<ERState>(ERState.Empty)
 
     override fun process(viewEvent: ERViewEvent) {
         when (viewEvent) {
@@ -31,24 +29,23 @@ class ExchangeRateIntent @Inject constructor(
     }
 
     @FlowPreview
-    override fun modelStates() = modelChannel.asFlow().distinctUntilChanged()
+    override fun modelStates() = modelChannel
 
     override fun cancel() {
-        modelChannel.close()
         scope.cancel()
     }
 
     private fun updateProgressState(isLoading: Boolean) {
-        modelChannel.offer(ERState.ProgressStatus(isLoading))
+        modelChannel.value = ERState.ProgressStatus(isLoading)
     }
 
     private fun showErrorMessage(message: String) {
-        modelChannel.offer(ERState.ErrorSnack(message))
+        modelChannel.value = ERState.ErrorSnack(message)
     }
 
     private fun updateRatesList(rates: List<Rate>) {
         val sortedRates = rates.sortedBy { rate -> rate.isFavorite }.reversed()
-        modelChannel.offer(ERState.UpdatedRates(sortedRates))
+        modelChannel.value = ERState.UpdatedRates(sortedRates)
     }
 
     private fun refreshRates() {

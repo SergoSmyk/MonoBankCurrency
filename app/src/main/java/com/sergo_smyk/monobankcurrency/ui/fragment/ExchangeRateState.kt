@@ -6,4 +6,5 @@ sealed class ExchangeRateState {
     class ErrorSnack(val errorText: String) : ExchangeRateState()
     class UpdatedRates(val rates: List<Rate>) : ExchangeRateState()
     class ProgressStatus(val isLoading: Boolean) : ExchangeRateState()
+    object Empty : ExchangeRateState()
 }

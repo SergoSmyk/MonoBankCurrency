@@ -27,6 +27,17 @@ data class Rate(
     companion object {
 
         @JvmStatic
+        val EMPTY = Rate(
+            Currency.getInstance("USD"),
+            Currency.getInstance("USD"),
+            Date(),
+            0.0f,
+            0.0f,
+            false,
+            0, 0
+        )
+
+        @JvmStatic
         private var format: SimpleDateFormat? = null
 
         private fun getFormat(locale: Locale): SimpleDateFormat {
